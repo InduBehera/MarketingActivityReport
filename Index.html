@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Phamax — Marketing & BD Dashboard, June 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --paper: #F5F5F1;
+  --paper-raise: #FFFFFF;
+  --ink: #241A19;
+  --ink-soft: #6B5C5A;
+  --muted: #9C9088;
+  --line: #E0D8D3;
+  --teal: #A3231F;
+  --teal-deep: #7A1712;
+  --amber: #C1752E;
+  --amber-pale: #F3E3CD;
+  --teal-pale: #F6E2E0;
+  --red-flag: #7A1712;
+  --slate: #62666E;
+  --slate-pale: #E8E9EB;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  line-height:1.45;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- APP SHELL / SIDEBAR ---------- */
+.app-shell{ display:flex; min-height:100vh; align-items:flex-start; }
+.sidebar{
+  width: 226px;
+  flex-shrink: 0;
+  background: var(--paper-raise);
+  border-right: 1px solid var(--line);
+  padding: 26px 14px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+.sidebar .brand{
+  font-family:'Source Serif 4', serif;
+  font-weight: 700;
+  font-size: 16px;
+  padding: 0 12px 6px;
+  color: var(--ink);
+}
+.sidebar .brand-sub{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 12px 22px;
+}
+.navlink{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  width: 100%;
+  text-align:left;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-family:'Inter', sans-serif;
+  margin-bottom: 2px;
+}
+.navlink:hover{ background: var(--paper); }
+.navlink.active{ background: var(--teal-pale); color: var(--teal-deep); font-weight: 600; }
+.navlink .status-dot{
+  width: 6px; height:6px;
+  border-radius: 50%;
+  background: var(--muted);
+  margin-left: auto;
+  flex-shrink:0;
+}
+.navlink.active .status-dot{ background: var(--teal); }
+.sidebar .sep{ height:1px; background: var(--line); margin: 14px 8px 12px; }
+.sidebar .nav-group-label{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 12px 6px;
+}
+.main-content{ flex: 1; min-width: 0; }
+.panel{ display:none; }
+.panel.active{ display:block; }
+
+/* ---------- TOPBAR / PERIOD FILTER ---------- */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap: 12px;
+  padding: 14px 32px;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-raise);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.topbar label{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.topbar select{
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 7px 12px;
+  cursor: pointer;
+}
+.topbar select:focus{ outline: 2px solid var(--teal-pale); }
+.no-data-wrap{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 100px 40px 120px;
+  text-align: center;
+}
+.no-data-badge{
+  display:inline-block;
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--slate);
+  background: var(--slate-pale);
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+.no-data-wrap h2{
+  font-family:'Source Serif 4', serif;
+  font-size: 26px;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+.no-data-wrap p{
+  font-size: 14px;
+  color: var(--ink-soft);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+.wrap{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+}
+
+/* ---------- WIP PANEL ---------- */
+.wip-wrap{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 100px 40px 120px;
+  text-align: center;
+}
+.wip-badge{
+  display:inline-block;
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+  background: var(--teal-pale);
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+.wip-wrap h2{
+  font-family:'Source Serif 4', serif;
+  font-size: 28px;
+  margin: 0 0 12px;
+  color: var(--ink);
+}
+.wip-wrap p{
+  font-size: 14px;
+  color: var(--ink-soft);
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ---------- MASTHEAD ---------- */
+.masthead{
+  border-bottom: 3px solid var(--ink);
+  padding-bottom: 28px;
+  margin-bottom: 36px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.masthead-left .kicker{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  color: var(--teal-deep);
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.masthead-left h1{
+  font-family:'Source Serif 4', serif;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1.08;
+  margin: 0 0 12px 0;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.masthead-left .sub{
+  font-size: 14.5px;
+  color: var(--ink-soft);
+  max-width: 560px;
+}
+.masthead-right{
+  text-align:right;
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.8;
+  white-space: nowrap;
+}
+.masthead-right .doc-id{
+  color: var(--teal-deep);
+  font-weight:600;
+}
+
+/* BU legend */
+.bu-legend{
+  display:flex;
+  gap: 14px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.bu-chip{
+  background: var(--paper-raise);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--teal);
+  padding: 10px 18px;
+  font-size: 13px;
+  border-radius: 3px;
+  display:flex;
+  align-items:baseline;
+  gap: 8px;
+}
+.bu-chip:nth-child(2){ border-left-color: var(--amber); }
+.bu-chip:nth-child(3){ border-left-color: #6E7C99; }
+.bu-chip:nth-child(4){ border-left-color: var(--slate); }
+.bu-chip b{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 13px;
+}
+.bu-chip span{ color: var(--ink-soft); }
+
+/* ---------- SECTION LABEL ---------- */
+.section-label{
+  display:flex;
+  align-items:center;
+  gap: 12px;
+  margin: 52px 0 20px;
+}
+.section-label .num{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  width: 26px; height: 26px;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.section-label h2{
+  font-family:'Source Serif 4', serif;
+  font-size: 21px;
+  font-weight: 600;
+  margin:0;
+  color: var(--ink);
+}
+.section-label .rule{
+  flex:1;
+  height:1px;
+  background: var(--line);
+}
+.sub-head{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal-deep);
+  margin: 30px 0 14px;
+  padding-top: 6px;
+}
+.sub-head:first-child{ margin-top: 4px; }
+
+/* ---------- KPI STRIP ---------- */
+.kpi-strip{
+  display:grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin-bottom: 8px;
+}
+.kpi{
+  background: var(--paper-raise);
+  padding: 22px 20px;
+}
+.kpi .val{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--teal-deep);
+  line-height:1;
+}
+.kpi .lbl{
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin-top: 8px;
+}
+
+/* ---------- COVERAGE MATRIX (signature element) ---------- */
+.matrix-card{
+  background: var(--paper-raise);
+  border: 1px solid var(--line);
+  padding: 6px;
+  overflow-x: auto;
+}
+table.matrix{
+  width:100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  min-width: 640px;
+}
+table.matrix th, table.matrix td{
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  text-align:center;
+}
+table.matrix th{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-weight: 500;
+  border-bottom: 2px solid var(--ink);
+}
+table.matrix th.corp{ color: var(--slate); }
+table.matrix td.initiative{
+  text-align:left;
+  font-weight: 600;
+  color: var(--ink);
+  font-size: 14px;
+}
+table.matrix td.initiative small{
+  display:block;
+  font-weight:400;
+  color: var(--muted);
+  font-size: 11.5px;
+  margin-top: 3px;
+}
+table.matrix tr:last-child td{ border-bottom:none; }
+table.matrix tr:hover{ background: #FBFBF9; }
+
+.stamp{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  border: 2px solid var(--teal);
+  color: var(--teal);
+  font-size: 15px;
+  font-weight: 700;
+  transform: rotate(-6deg);
+}
+.stamp.b{ transform: rotate(4deg); border-color: var(--teal-deep); color: var(--teal-deep);}
+.stamp.c{ transform: rotate(-3deg); }
+.stamp.corp{ border-color: var(--slate); color: var(--slate); transform: rotate(2deg); }
+.dash{
+  color: var(--muted);
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 15px;
+}
+
+/* ---------- EMAIL PERFORMANCE ---------- */
+.email-grid{
+  display:grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 20px;
+}
+.funnel-card, .stat-card{
+  background: var(--paper-raise);
+  border: 1px solid var(--line);
+  padding: 26px 28px;
+}
+.funnel-row{
+  display:grid;
+  grid-template-columns: 110px 1fr 60px;
+  align-items:center;
+  gap: 14px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+.funnel-row .flabel{ color: var(--ink-soft); font-weight:500;}
+.funnel-track{
+  background: var(--teal-pale);
+  border-radius: 2px;
+  height: 14px;
+  overflow:hidden;
+}
+.funnel-fill{
+  height:100%;
+  background: var(--teal);
+  border-radius: 2px;
+}
+.funnel-row:nth-child(4) .funnel-fill{ background: var(--amber); }
+.funnel-row:nth-child(5) .funnel-fill{ background: var(--red-flag); }
+.funnel-row .fval{
+  font-family:'IBM Plex Mono', monospace;
+  text-align:right;
+  font-weight:600;
+  color: var(--ink);
+}
+.funnel-note{
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 14px;
+  border-top: 1px dashed var(--line);
+  padding-top: 12px;
+}
+
+.stat-card h3{
+  font-family:'Source Serif 4', serif;
+  font-size: 15px;
+  margin: 0 0 16px 0;
+  color: var(--ink);
+}
+.stat-line{
+  display:flex;
+  justify-content:space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.stat-line:last-child{ border-bottom:none; }
+.stat-line .k{ color: var(--ink-soft); }
+.stat-line .v{
+  font-family:'IBM Plex Mono', monospace;
+  font-weight:600;
+  color: var(--teal-deep);
+}
+.stat-line .v.amber{ color: var(--amber); }
+
+/* ---------- INITIATIVE CARDS ---------- */
+.card-grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.icard{
+  background: var(--paper-raise);
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--teal);
+  padding: 22px 22px 20px;
+}
+.icard.amber-top{ border-top-color: var(--amber); }
+.icard.slate-top{ border-top-color: var(--slate); }
+.icard .tag{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform:uppercase;
+  margin-bottom: 10px;
+}
+.icard h4{
+  font-family:'Source Serif 4', serif;
+  font-size: 16.5px;
+  margin: 0 0 10px 0;
+  color: var(--ink);
+}
+.icard p{
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0 0 14px 0;
+}
+.icard .scope{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.pill{
+  font-size: 10.5px;
+  font-family:'IBM Plex Mono', monospace;
+  background: var(--teal-pale);
+  color: var(--teal-deep);
+  padding: 4px 9px;
+  border-radius: 20px;
+}
+.pill.amber{ background: var(--amber-pale); color: #8A521E; }
+.pill.muted{ background: #EFEFE9; color: var(--muted); }
+.pill.slate{ background: var(--slate-pale); color: var(--slate); }
+
+/* ---------- WEBSITE TRAFFIC ---------- */
+.traffic-card{
+  background: var(--paper-raise);
+  border: 1px solid var(--line);
+  padding: 4px;
+}
+.traffic-kpis{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+.traffic-kpi{
+  background: var(--paper-raise);
+  padding: 18px 20px;
+}
+.traffic-kpi .val{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--teal-deep);
+}
+.traffic-kpi .lbl{
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+.traffic-chart{
+  padding: 20px 24px 8px;
+}
+.chart-legend{
+  display:flex;
+  gap: 18px;
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+.chart-legend span{ display:flex; align-items:center; gap:6px; }
+.dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+.dot.clicks{ background: var(--teal); }
+.dot.impr{ background: var(--slate); }
+.traffic-note{
+  font-size: 11px;
+  color: var(--muted);
+  padding: 8px 24px 18px;
+  border-top: 1px dashed var(--line);
+  margin-top: 6px;
+}
+
+/* ---------- HR / CORPORATE STRIP ---------- */
+.hr-strip{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.hr-strip-4{
+  grid-template-columns: repeat(4, 1fr);
+}
+.hr-card{
+  background: var(--paper-raise);
+  border: 1px solid var(--line);
+  padding: 20px 22px;
+  display:flex;
+  align-items:center;
+  gap: 16px;
+}
+.hr-card .mark{
+  font-family:'Source Serif 4', serif;
+  font-weight: 700;
+  color: var(--teal-deep);
+  width: 44px; height:44px;
+  border: 1.5px solid var(--teal-deep);
+  border-radius: 50%;
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+  font-size: 15px;
+}
+.hr-card .txt h5{ margin:0 0 4px 0; font-size: 14px; }
+.hr-card .txt h5 .rating{
+  font-family:'IBM Plex Mono', monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--teal-deep);
+  background: var(--teal-pale);
+  padding: 2px 7px;
+  border-radius: 10px;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+.hr-card .txt p{ margin:0; font-size: 12px; color: var(--ink-soft); }
+
+/* ---------- FOOTER ---------- */
+.footer{
+  margin-top: 60px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  flex-wrap:wrap;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.footer .cadence{
+  font-family:'IBM Plex Mono', monospace;
+  color: var(--teal-deep);
+  background: var(--teal-pale);
+  padding: 8px 14px;
+  border-radius: 3px;
+  font-size: 11.5px;
+}
+
+@media (max-width: 860px){
+  .app-shell{ flex-direction: column; }
+  .sidebar{
+    width: 100%;
+    height: auto;
+    position: relative;
+    display: flex;
+    overflow-x: auto;
+    padding: 12px 10px;
+    gap: 6px;
+    align-items: center;
+  }
+  .sidebar .brand, .sidebar .brand-sub, .sidebar .sep, .sidebar .nav-group-label{ display:none; }
+  .navlink{ white-space: nowrap; margin-bottom:0; }
+  .topbar{ padding: 12px 20px; justify-content: space-between; }
+  .kpi-strip{ grid-template-columns: repeat(2,1fr); }
+  .email-grid{ grid-template-columns: 1fr; }
+  .card-grid{ grid-template-columns: 1fr; }
+  .hr-strip{ grid-template-columns: 1fr; }
+  .hr-strip-4{ grid-template-columns: 1fr; }
+  .traffic-kpis{ grid-template-columns: repeat(2,1fr); }
+  .masthead{ flex-direction:column; align-items:flex-start; }
+  .masthead-right{ text-align:left; }
+  table.matrix{ font-size: 12px; }
+  table.matrix th, table.matrix td{ padding: 10px 8px; }
+  .masthead-left h1{ font-size: 30px; }
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+
+  <nav class="sidebar">
+    <div class="brand">Phamax</div>
+    <div class="brand-sub">Marketing &amp; BD</div>
+    <button class="navlink active" data-panel="overview">Marketing overview<span class="status-dot"></span></button>
+    <button class="navlink" data-panel="ci">CI<span class="status-dot"></span></button>
+    <button class="navlink" data-panel="content">Content repository<span class="status-dot"></span></button>
+    <div class="sep"></div>
+    <div class="nav-group-label">Suggested additions</div>
+    <button class="navlink" data-panel="email">Email &amp; outreach<span class="status-dot"></span></button>
+    <button class="navlink" data-panel="website">Website &amp; SEO<span class="status-dot"></span></button>
+    <button class="navlink" data-panel="hr">Employer brand &amp; HR<span class="status-dot"></span></button>
+    <button class="navlink" data-panel="bu">BU enablement<span class="status-dot"></span></button>
+    <button class="navlink" data-panel="roadmap">Roadmap<span class="status-dot"></span></button>
+    <div class="sep"></div>
+  </nav>
+
+  <main class="main-content">
+
+    <div class="topbar">
+      <label for="period-select">Reporting period</label>
+      <select id="period-select">
+        <option value="jun-2026">June 2026</option>
+        <option value="may-2026">May 2026</option>
+        <option value="apr-2026">April 2026</option>
+        <option value="mar-2026">March 2026</option>
+      </select>
+    </div>
+
+    <!-- MARKETING OVERVIEW PANEL -->
+    <div class="panel active" id="panel-overview">
+      <div class="wrap">
+
+        <!-- MASTHEAD -->
+        <div class="masthead">
+          <div class="masthead-left">
+            <div class="kicker">Phamax · Internal Report</div>
+            <h1>Marketing &amp; Business<br>Development Activity Report</h1>
+            <div class="sub">A monthly record of the IP built, campaigns run, and outreach support delivered across business units.</div>
+          </div>
+          <div class="masthead-right">
+            <div>Reporting Period: <span class="doc-id">June 2026</span></div>
+            <div>Prepared for: Leadership Team</div>
+            <div>Status: <span class="doc-id">Final</span></div>
+          </div>
+        </div>
+
+        <!-- BU LEGEND -->
+        <div class="bu-legend">
+          <div class="bu-chip"><b>BU1</b><span>Business Intelligence</span></div>
+          <div class="bu-chip"><b>BU2</b><span>Business Consulting</span></div>
+          <div class="bu-chip"><b>BU3</b><span>Forecasting</span></div>
+          <div class="bu-chip"><b>Corporate</b><span>Cross-BU enablement &amp; brand</span></div>
+        </div>
+
+        <!-- KPI STRIP -->
+        <div class="kpi-strip">
+          <div class="kpi"><div class="val">10</div><div class="lbl">Initiatives active this month</div></div>
+          <div class="kpi"><div class="val">4</div><div class="lbl">Units in scope, incl. Corporate</div></div>
+          <div class="kpi"><div class="val">197</div><div class="lbl">Emails triggered (BU1 + BU2)</div></div>
+          <div class="kpi"><div class="val">2</div><div class="lbl">Case studies built</div></div>
+          <div class="kpi"><div class="val">3</div><div class="lbl">App scoping proposals delivered</div></div>
+        </div>
+
+        <!-- COVERAGE MATRIX -->
+        <div class="section-label">
+          <div class="num">1</div>
+          <h2>Initiative Coverage by Business Unit</h2>
+          <div class="rule"></div>
+        </div>
+        <div class="matrix-card">
+          <table class="matrix">
+            <tr>
+              <th style="text-align:left;">Initiative</th>
+              <th>BU1</th>
+              <th>BU2</th>
+              <th>BU3</th>
+              <th class="corp">Corporate</th>
+            </tr>
+            <tr>
+              <td class="initiative">Email Outreach Campaign<small>100+ emails triggered per BU</small></td>
+              <td><span class="stamp">✓</span></td>
+              <td><span class="stamp b">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+            </tr>
+            <tr>
+              <td class="initiative">Case Study<small>Built from past client engagements</small></td>
+              <td><span class="stamp">✓</span></td>
+              <td><span class="stamp b">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+            </tr>
+            <tr>
+              <td class="initiative">App Scoping Proposal<small>Post-Launch Excellence · Analytics Intelligence · Forecasting Model Builder</small></td>
+              <td><span class="stamp">✓</span></td>
+              <td><span class="stamp b">✓</span></td>
+              <td><span class="stamp c">✓</span></td>
+              <td><span class="dash">—</span></td>
+            </tr>
+            <tr>
+              <td class="initiative">Conversational AI Chatbot — Phase 1<small>Live on the Phamax website</small></td>
+              <td><span class="stamp">✓</span></td>
+              <td><span class="stamp b">✓</span></td>
+              <td><span class="stamp c">✓</span></td>
+              <td><span class="stamp corp">✓</span></td>
+            </tr>
+            <tr>
+              <td class="initiative">Chatbot UI<small>Foundational build, shared front-end</small></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="stamp corp">✓</span></td>
+            </tr>
+            <tr>
+              <td class="initiative">LinkedIn Training<small>For BU heads — profile, visibility, content</small></td>
+              <td><span class="stamp">✓</span></td>
+              <td><span class="stamp b">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+            </tr>
+            <tr>
+              <td class="initiative">Phamax Positioning<small>Narrative &amp; messaging support</small></td>
+              <td><span class="stamp">✓</span></td>
+              <td><span class="stamp b">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+            </tr>
+            <tr>
+              <td class="initiative">Internal App — Content Gen &amp; Prospecting<small>Outreach support tool</small></td>
+              <td><span class="stamp">✓</span></td>
+              <td><span class="stamp b">✓</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+            </tr>
+            <tr>
+              <td class="initiative">Website Traffic<small>Organic search performance, Phamax.com</small></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="stamp corp">✓</span></td>
+            </tr>
+            <tr>
+              <td class="initiative">HR Initiatives<small>Ambitionbox · Glassdoor · Google Reviews · Pre-Recruitment Brochure</small></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="dash">—</span></td>
+              <td><span class="stamp corp">✓</span></td>
+            </tr>
+          </table>
+        </div>
+
+        <!-- EMAIL PERFORMANCE -->
+        <div class="section-label">
+          <div class="num">2</div>
+          <h2>Email Campaign Performance</h2>
+          <div class="rule"></div>
+        </div>
+        <div class="email-grid">
+          <div class="funnel-card">
+            <div class="funnel-row">
+              <div class="flabel">Sent</div>
+              <div class="funnel-track"><div class="funnel-fill" style="width:100%;"></div></div>
+              <div class="fval">179</div>
+            </div>
+            <div class="funnel-row">
+              <div class="flabel">Delivered</div>
+              <div class="funnel-track"><div class="funnel-fill" style="width:100%;"></div></div>
+              <div class="fval">179</div>
+            </div>
+            <div class="funnel-row">
+              <div class="flabel">Opened</div>
+              <div class="funnel-track"><div class="funnel-fill" style="width:18.4%;"></div></div>
+              <div class="fval">33</div>
+            </div>
+            <div class="funnel-row">
+              <div class="flabel">Clicked</div>
+              <div class="funnel-track"><div class="funnel-fill" style="width:6.1%;"></div></div>
+              <div class="fval">11</div>
+            </div>
+            <div class="funnel-row">
+              <div class="flabel">Replied</div>
+              <div class="funnel-track"><div class="funnel-fill" style="width:2.2%;"></div></div>
+              <div class="fval">4</div>
+            </div>
+            <div class="funnel-note">Bar widths shown as % of emails sent. Campaign spanned BU1 and BU2, with 100+ emails triggered per BU.</div>
+          </div>
+          <div class="stat-card">
+            <h3>Funnel Detail</h3>
+            <div class="stat-line"><span class="k">Total in system</span><span class="v">197</span></div>
+            <div class="stat-line"><span class="k">Drafted / Scheduled</span><span class="v">3 / 15</span></div>
+            <div class="stat-line"><span class="k">Delivery rate</span><span class="v">100%</span></div>
+            <div class="stat-line"><span class="k">Open rate (of tracked)</span><span class="v amber">20.8%</span></div>
+            <div class="stat-line"><span class="k">Click rate (of tracked)</span><span class="v amber">7.1%</span></div>
+            <div class="stat-line"><span class="k">Reply rate</span><span class="v amber">2.2%</span></div>
+          </div>
+        </div>
+
+        <!-- INITIATIVE DETAILS -->
+        <div class="section-label">
+          <div class="num">3</div>
+          <h2>Initiative Detail</h2>
+          <div class="rule"></div>
+        </div>
+        <div class="card-grid">
+          <div class="icard">
+            <div class="tag">Business Development</div>
+            <h4>Case Studies</h4>
+            <p>Built from past client engagements, packaged for use in outbound prospecting to new clients.</p>
+            <div class="scope"><span class="pill">BU1</span><span class="pill">BU2</span></div>
+          </div>
+          <div class="icard amber-top">
+            <div class="tag">Business Development</div>
+            <h4>App Scoping Proposals</h4>
+            <p>Post-Launch Excellence (BU1), Analytics Intelligence (BU2), and Forecasting Model Builder (BU3) — one proposal per BU.</p>
+            <div class="scope"><span class="pill amber">BU1</span><span class="pill amber">BU2</span><span class="pill amber">BU3</span></div>
+          </div>
+          <div class="icard">
+            <div class="tag">Product / IP</div>
+            <h4>Conversational AI Chatbot — Phase 1</h4>
+            <p>Built for all three BUs and for Phamax as a whole; now live on the company website.</p>
+            <div class="scope"><span class="pill">BU1</span><span class="pill">BU2</span><span class="pill">BU3</span><span class="pill slate">Corporate</span></div>
+          </div>
+          <div class="icard amber-top">
+            <div class="tag">Personal Branding</div>
+            <h4>LinkedIn Training</h4>
+            <p>Hands-on support for BU heads: profile optimisation, visibility building, and content posting suggestions. Not yet started for BU3.</p>
+            <div class="scope"><span class="pill amber">BU1</span><span class="pill amber">BU2</span></div>
+          </div>
+          <div class="icard">
+            <div class="tag">Brand</div>
+            <h4>Phamax Positioning</h4>
+            <p>Narrative and messaging groundwork built to sharpen how Phamax is positioned to prospects.</p>
+            <div class="scope"><span class="pill">BU1</span><span class="pill">BU2</span></div>
+          </div>
+          <div class="icard">
+            <div class="tag">Internal Tooling</div>
+            <h4>Content Gen &amp; Prospecting App</h4>
+            <p>Internal application supporting content generation and prospecting outreach for the sales pipeline.</p>
+            <div class="scope"><span class="pill">BU1</span><span class="pill">BU2</span></div>
+          </div>
+        </div>
+
+        <!-- CORPORATE INITIATIVES -->
+        <div class="section-label">
+          <div class="num">4</div>
+          <h2>Corporate Initiatives</h2>
+          <div class="rule"></div>
+        </div>
+
+        <div class="sub-head" style="display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:8px;">
+          <span>Website Traffic — Organic Search Performance</span>
+          <span style="color:var(--muted); letter-spacing:normal; text-transform:none; font-size:11.5px;">June 1 – June 30, 2026</span>
+        </div>
+        <div class="traffic-card">
+          <div class="traffic-kpis">
+            <div class="traffic-kpi"><div class="val">146</div><div class="lbl">Total clicks</div></div>
+            <div class="traffic-kpi"><div class="val">1.95K</div><div class="lbl">Total impressions</div></div>
+            <div class="traffic-kpi"><div class="val">7.5%</div><div class="lbl">Average CTR</div></div>
+            <div class="traffic-kpi"><div class="val">9.2</div><div class="lbl">Average position</div></div>
+          </div>
+          <div class="traffic-chart">
+            <div class="chart-legend">
+              <span><i class="dot clicks"></i>Clicks</span>
+              <span><i class="dot impr"></i>Impressions</span>
+            </div>
+            <svg viewBox="0 0 1040 210" width="100%" height="200" preserveAspectRatio="none">
+              <line x1="20" y1="170" x2="1020" y2="170" stroke="#E0D8D3" stroke-width="1"/>
+              <line x1="20" y1="95" x2="1020" y2="95" stroke="#EFE8E3" stroke-width="1"/>
+              <line x1="20" y1="20" x2="1020" y2="20" stroke="#EFE8E3" stroke-width="1"/>
+              <polyline points="20,95 90,20 160,170 230,82.5 300,32.5 370,107.5 440,145 510,82.5 580,107.5 650,145 720,70 790,32.5 860,32.5 930,157.5 1000,70"
+                fill="none" stroke="#A3231F" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+              <polyline points="20,82.5 90,95 160,120 230,70 300,120 370,115.8 440,132.5 510,32.5 580,82.5 650,132.5 720,120 790,61.7 860,115.8 930,120 1000,95"
+                fill="none" stroke="#62666E" stroke-width="2" stroke-dasharray="1,0" stroke-linejoin="round" stroke-linecap="round" opacity="0.85"/>
+              <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#9C9088">
+                <text x="20" y="188">6/2</text><text x="90" y="188">6/4</text><text x="160" y="188">6/6</text>
+                <text x="230" y="188">6/8</text><text x="300" y="188">6/10</text><text x="370" y="188">6/12</text>
+                <text x="440" y="188">6/14</text><text x="510" y="188">6/16</text><text x="580" y="188">6/18</text>
+                <text x="650" y="188">6/20</text><text x="720" y="188">6/22</text><text x="790" y="188">6/24</text>
+                <text x="860" y="188">6/26</text><text x="920" y="188">6/28</text><text x="985" y="188">6/30</text>
+              </g>
+            </svg>
+          </div>
+          <div class="traffic-note">Trend line illustrates the daily shape of the period from Search Console; KPI totals above are the reported figures for June 1–30, 2026.</div>
+        </div>
+
+        <div class="sub-head">Employer Brand &amp; Reviews</div>
+        <div class="hr-strip hr-strip-4">
+          <div class="hr-card">
+            <div class="mark">AB</div>
+            <div class="txt"><h5>Ambitionbox <span class="rating">3.8 ★</span></h5><p>Profile optimised, reviews audited</p></div>
+          </div>
+          <div class="hr-card">
+            <div class="mark">GD</div>
+            <div class="txt"><h5>Glassdoor <span class="rating">3.9 ★</span></h5><p>Profile optimised, reviews audited</p></div>
+          </div>
+          <div class="hr-card">
+            <div class="mark">GR</div>
+            <div class="txt"><h5>Google Reviews <span class="rating">4.2 ★</span></h5><p>Reviews reviewed and tracked</p></div>
+          </div>
+          <div class="hr-card">
+            <div class="mark">PB</div>
+            <div class="txt"><h5>Pre-Recruitment Brochure</h5><p>Built to introduce Phamax to prospective candidates</p></div>
+          </div>
+        </div>
+
+        <div class="sub-head">Shared Product Foundation</div>
+        <div class="card-grid">
+          <div class="icard slate-top">
+            <div class="tag">Product / IP</div>
+            <h4>Chatbot UI</h4>
+            <p>Basic interface designed as the shared front-end for the chatbot across all BUs; foundational work ahead of wider rollout.</p>
+            <div class="scope"><span class="pill slate">Corporate</span></div>
+          </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+          <div>Compiled from campaign tracking data, Search Console, and team activity logs, June 1–30, 2026.</div>
+          <div class="cadence">This report refreshes monthly — next update: July 2026</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CI PANEL (WIP) -->
+    <div class="panel" id="panel-ci">
+      <div class="wip-wrap">
+        <div class="wip-badge">Work in progress</div>
+        <h2>Competitive Intelligence</h2>
+        <p>This section will track competitor activity, market signals, and positioning intel relevant to BU1, BU2, and BU3. Coming in a future update.</p>
+      </div>
+    </div>
+
+    <!-- CONTENT REPOSITORY PANEL (WIP) -->
+    <div class="panel" id="panel-content">
+      <div class="wip-wrap">
+        <div class="wip-badge">Work in progress</div>
+        <h2>Content Repository</h2>
+        <p>A searchable library of case studies, proposals, brochures, and other collateral built for the BUs will live here. Coming in a future update.</p>
+      </div>
+    </div>
+
+    <!-- EMAIL & OUTREACH (WIP) -->
+    <div class="panel" id="panel-email">
+      <div class="wip-wrap">
+        <div class="wip-badge">Work in progress</div>
+        <h2>Email &amp; Outreach</h2>
+        <p>A dedicated view for campaign cadence, reply sentiment, and BU-level breakdowns of the outreach funnel. Coming in a future update.</p>
+      </div>
+    </div>
+
+    <!-- WEBSITE & SEO (WIP) -->
+    <div class="panel" id="panel-website">
+      <div class="wip-wrap">
+        <div class="wip-badge">Work in progress</div>
+        <h2>Website &amp; SEO</h2>
+        <p>Month-over-month traffic trends, keyword performance, and landing page analytics. Coming in a future update.</p>
+      </div>
+    </div>
+
+    <!-- EMPLOYER BRAND & HR (WIP) -->
+    <div class="panel" id="panel-hr">
+      <div class="wip-wrap">
+        <div class="wip-badge">Work in progress</div>
+        <h2>Employer Brand &amp; HR</h2>
+        <p>Review platform trends, brochure performance, and hiring funnel metrics in one place. Coming in a future update.</p>
+      </div>
+    </div>
+
+    <!-- BU ENABLEMENT (WIP) -->
+    <div class="panel" id="panel-bu">
+      <div class="wip-wrap">
+        <div class="wip-badge">Work in progress</div>
+        <h2>BU Enablement</h2>
+        <p>Assets organized by BU — proposals, case studies, and positioning docs, grouped so each BU head can see their own. Coming in a future update.</p>
+      </div>
+    </div>
+
+    <!-- ROADMAP (WIP) -->
+    <div class="panel" id="panel-roadmap">
+      <div class="wip-wrap">
+        <div class="wip-badge">Work in progress</div>
+        <h2>Roadmap</h2>
+        <p>What's planned for next month, by BU and initiative. Coming in a future update.</p>
+      </div>
+    </div>
+
+    <!-- NO DATA (shown when a non-current period is selected) -->
+    <div class="panel" id="panel-no-data">
+      <div class="no-data-wrap">
+        <div class="no-data-badge">No report published</div>
+        <h2 id="no-data-heading">No report for this period</h2>
+        <p>Select June 2026 to view the current report, or check back once this period has been compiled.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+var periodLabels = { 'jun-2026': 'June 2026', 'may-2026': 'May 2026', 'apr-2026': 'April 2026', 'mar-2026': 'March 2026' };
+var currentPanel = 'overview';
+
+function renderView(){
+  var period = document.getElementById('period-select').value;
+  document.querySelectorAll('.panel').forEach(function(p){ p.classList.remove('active'); });
+  if(period !== 'jun-2026'){
+    document.getElementById('no-data-heading').textContent = 'No report for ' + periodLabels[period];
+    document.getElementById('panel-no-data').classList.add('active');
+  } else {
+    document.getElementById('panel-' + currentPanel).classList.add('active');
+  }
+}
+
+document.querySelectorAll('.navlink').forEach(function(btn){
+  btn.addEventListener('click', function(){
+    document.querySelectorAll('.navlink').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentPanel = btn.dataset.panel;
+    renderView();
+  });
+});
+
+document.getElementById('period-select').addEventListener('change', renderView);
+</script>
+</body>
+</html>
